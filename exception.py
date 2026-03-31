@@ -1,11 +1,13 @@
 import sys
 
+
 def error_message_detail(error, error_detail: sys):
     _, _, exc_tb = error_detail.exc_info()
     file_name = exc_tb.tb_frame.f_code.co_filename
     return "Error in script [{0}] line [{1}] message [{2}]".format(
         file_name, exc_tb.tb_lineno, str(error)
     )
+
 
 class CustomException(Exception):
     def __init__(self, error_message, error_detail: sys):
