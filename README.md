@@ -1,146 +1,228 @@
-# Real-time Indian Sign Language Fingerspelling Translator
+# REAL-TIME ISL FINGER SPELLING TRANSLATOR
 
-A webcam-based computer vision project that recognizes Indian Sign Language (ISL) alphabet hand gestures in real time using MediaPipe hand landmarks and an ANN classifier.
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-023F7F?style=for-the-badge&logo=opencv&logoColor=white)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-0099BC?style=for-the-badge&logo=google&logoColor=white)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
 
 ## Project Overview
 
-This project performs real-time fingerspelling recognition for ISL alphabet gestures (A-Z). The system detects a hand from webcam frames, extracts 21 hand landmarks using MediaPipe, converts them into 63 normalized features, and predicts the corresponding letter using a trained Artificial Neural Network (ANN).
+This project is a **real-time webcam-based Indian Sign Language (ISL) finger spelling translator** that recognizes hand gestures for alphabets using **MediaPipe hand landmarks** and a trained **Artificial Neural Network (ANN)** classifier.
 
-The application also builds words and simple sentences by confirming stable predictions over time.
+The system captures video from a webcam, detects a hand, extracts 21 hand landmarks, converts them into normalized numerical features, and predicts the corresponding alphabet in real time. Predicted letters are then combined over time to form words.
 
-## Features
+### Main Features
 
-- Real-time webcam-based hand gesture recognition
-- MediaPipe hand landmark extraction
-- 63-feature normalized hand keypoint representation
+- Real-time webcam capture using OpenCV
+- Hand landmark detection using MediaPipe
+- Keypoint-based feature extraction
 - ANN-based alphabet classification
-- Confidence thresholding for stable predictions
-- Hold-to-confirm mechanism for letter addition
-- Word and sentence building in real time
-- Modular project structure with reusable Python components
+- Live prediction with confidence score
+- Word building from consecutive letter predictions
+- Modular Python project structure for cleaner submission
+
+## Dataset Information
+
+This project uses the **Indian Sign Language (ISLRTC referred)** dataset from Kaggle. The dataset contains Indian Sign Language images for English alphabets **A-Z** and numbers **0-9**. [Kaggle dataset link](https://www.kaggle.com/datasets/atharvadumbre/indian-sign-language-islrtc-referred). 
+
+### Dataset Source
+- **Name:** Indian Sign Language (ISLRTC referred)
+- **Platform:** Kaggle
+- **Link:** https://www.kaggle.com/datasets/atharvadumbre/indian-sign-language-islrtc-referred
+- **Classes available:** Alphabets A-Z and digits 0-9
+
+### Dataset Usage in This Project
+For this project, only the **alphabet gestures (A-Z)** are used for training the finger spelling translator.
+
+## Project Workflow
+
+1. Collect or download ISL image data.
+2. Use MediaPipe to detect hand landmarks from each image.
+3. Extract 63 features 
+4. Normalize keypoints relative to the wrist.
+5. Save processed features into a CSV dataset.
+6. Train an ANN classifier on the processed dataset.
+7. Save the trained model, scaler, and label encoder.
+8. Run the webcam application for real-time prediction.
+9. Combine stable predictions into words.
 
 ## Project Structure
 
 ```text
-INDIANSIGNLANGUAGE/
-├── data/
-│   ├── raw_images/
-│   │   ├── A/
-│   │   ├── B/
-│   │   └── ...
-│   └── isl_keypoints.csv
-├── logs/
-├── models/
+IndianSignLanguage/
+├── app.py                      # Main webcam application
+├── setup.py                    # Package setup file
+├── requirements.txt            # Python dependencies
+├── README.md                   # Project documentation
+├── logger.py                   # Logging configuration
+├── exception.py                # Custom exception handling
+├── utils.py                    # Utility functions
+│
+├── data/                       # Dataset files and processed CSV
+├── logs/                       # Log files
+├── models/                     # Saved model artifacts
 │   ├── isl_model.pkl
 │   ├── label_encoder.pkl
 │   └── scaler.pkl
-├── src/
-│   ├── components/
-│   │   ├── data_preparation.py
-│   │   └── model_trainer.py
-│   ├── pipeline/
-│   │   └── predict_pipeline.py
-│   ├── exception.py
-│   ├── logger.py
-│   └── utils.py
-├── app.py
-├── prepare_data.py
-├── train.py
-├── requirements.txt
-├── setup.py
-└── README.md
+│
+├── components/                 # Training and data preparation logic
+│   ├── __init__.py
+│   ├── data_preparation.py
+│   ├── model_trainer.py
+│   ├── prepare_data.ipynb
+│   └── training.ipynb
+│
+├── pipeline/                   # Real-time prediction pipeline
+│   ├── __init__.py
+│   └── predict_pipeline.py
+│
+├── prepare_data.py             # Script to prepare dataset
+└── train.py                    # Script to train the model
 ```
 
-## Dataset Preparation
+## Technologies Used
 
-The dataset consists of alphabet-wise folders containing gesture images for A-Z.  
-MediaPipe is used in static image mode to detect one hand per image.  
-For each valid image:
+- Python
+- OpenCV
+- MediaPipe
+- NumPy
+- Pandas
+- Scikit-learn
+- Joblib
+- TQDM
 
-- 21 hand landmarks are extracted
-- Each landmark contributes x, y, z values
-- Total features = 21 x 3 = 63
-- Features are normalized relative to the wrist and scaled by hand size
-- The resulting dataset is saved as `data/isl_keypoints.csv`
+## Environment Setup
 
-## Model Training
+These steps assume the evaluator has no prior context and is setting up the project from scratch.
 
-The classifier is trained using:
+### Prerequisites
 
-- `StandardScaler` for feature scaling
-- `LabelEncoder` for converting A-Z into class labels
-- `MLPClassifier` from scikit-learn as the ANN model
+Make sure the following are installed:
 
-### Model configuration
+- Python 3.10 or Python 3.11
+- pip
+- Webcam
+- Git (optional, if cloning from GitHub)
 
-- Hidden layers: `(256, 128, 64)`
-- Activation: `relu`
-- Optimizer: `adam`
-- Early stopping enabled
-- Validation fraction: `0.1`
+### Step 1: Clone the Repository
 
-### Reported performance
+```bash
+git clone <your-repository-link>
+cd IndianSignLanguage
+```
 
-- Dataset size: 5277 samples
-- Number of classes: 26
-- Test accuracy: 96.69%
+If the project is already downloaded as a ZIP, extract it and open the project folder in terminal.
 
-## Real-Time Inference Flow
+### Step 2: Create a Virtual Environment
 
-1. Webcam frame is captured using OpenCV
-2. Hand landmarks are detected using MediaPipe
-3. 63 normalized keypoint features are extracted
-4. Features are scaled using the saved scaler
-5. ANN predicts the letter and probability scores
-6. If confidence is above threshold, the prediction is shown
-7. If the same letter is held for a fixed duration, it is added to the current word
-8. If no hand is detected for some time, the current word is added to the sentence
+**Windows**
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
 
-## How to Run
+**Linux / macOS**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-### 1. Install dependencies
+### Step 3: Upgrade pip
+
+```bash
+python -m pip install --upgrade pip
+```
+
+### Step 4: Install Dependencies
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Step 5: Install the Project in Editable Mode
+
+If not already handled by `-e .` in `requirements.txt`, run:
+
+```bash
 pip install -e .
 ```
 
-### 2. Prepare dataset
+## Configuration
+
+Before running the project, check the following:
+
+- Ensure the `models/` folder exists.
+- Ensure trained files are available:
+  - `models/isl_model.pkl`
+  - `models/label_encoder.pkl`
+  - `models/scaler.pkl`
+- If these files are not available, first run data preparation and training.
+
+## Step-by-Step Execution
+
+### Option 1: Run the Full Pipeline from Scratch
+
+#### Step A: Prepare Dataset Features
+
+This script processes gesture images, extracts MediaPipe landmarks, and creates a CSV file for training.
 
 ```bash
 python prepare_data.py
 ```
 
-### 3. Train model
+Expected output:
+- Processed CSV file saved in `data/`
+- Keypoint features for each gesture sample
+
+#### Step B: Train the Model
+
+This script trains the ANN classifier and saves the trained artifacts.
 
 ```bash
 python train.py
 ```
 
-### 4. Run the real-time app
+Expected output:
+- `models/isl_model.pkl`
+- `models/label_encoder.pkl`
+- `models/scaler.pkl`
+
+#### Step C: Run the Real-Time Webcam App
 
 ```bash
 python app.py
 ```
 
-## Controls
+This launches the webcam-based finger spelling translator.
 
-- `Q` -> Quit the application
-- `Backspace` -> Remove last letter from current word
-- `Space` -> Push current word into sentence
+### Option 2: Run Only the Real-Time App
 
-## Limitations
+If trained model files are already present in `models/`, run:
 
-- The project recognizes isolated alphabet gestures, not full continuous sign language sentences
-- Performance depends on lighting, hand visibility, and webcam quality
-- Some letters may be confused more often than others due to dataset imbalance or visual similarity
-- MediaPipe may fail to detect hands in some images or live frames
-- Repeated letters in words may need deliberate hand separation between signs
+```bash
+python app.py
+```
 
-## Future Improvements
+## How to Use the App
 
-- Add temporal smoothing using a sequence model like LSTM
-- Add support for dynamic gestures
-- Improve repeated-letter handling
-- Expand beyond alphabet-level recognition into word-level sign recognition
-- Build a Streamlit or web-based interface
+1. Start the app using `python app.py`.
+2. Allow the webcam to open.
+3. Show one hand clearly in front of the camera.
+4. Make an ISL alphabet gesture.
+5. Hold the gesture steady until the prediction is confirmed.
+6. The predicted letter will be displayed on screen.
+7. Continue showing letters to build a word.
+8. Use the on-screen controls if implemented:
+   - `Q` to quit
+   - `Backspace` to delete last character
+   - `Space` to finalize a word
+
+
+## Notebooks
+
+The notebooks are kept as experimentation evidence and project development support.
+
+- `components/prepare_data.ipynb` — landmark extraction and dataset preparation experiments
+- `components/training.ipynb` — training and evaluation experiments
+
+The final executable submission should use the `.py` modules and scripts instead of relying only on notebooks.
