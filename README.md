@@ -107,7 +107,7 @@ Make sure the following are installed:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <your-repository-link>
+git clone (https://github.com/aditi-gupta-git/Real-Time-Indian-Sign-Language-Fingerspelling-Translator)
 cd IndianSignLanguage
 ```
 
